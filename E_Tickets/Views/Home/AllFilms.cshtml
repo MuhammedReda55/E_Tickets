@@ -1,0 +1,217 @@
+﻿@model List<Movie>
+
+@section Scripts {
+    @if (TempData["message"] != null)
+    {
+        <script>
+            toastr.success('@TempData["message"]')
+        </script>
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f9f9f9;
+        }
+
+        h1 {
+        font-size: 24px;
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+        }
+
+        table {
+        width: 90%;
+        border-collapse: collapse;
+        margin: 0 auto;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        }
+
+        th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+        font-size: 14px;
+        }
+
+        th {
+        background-color: #007bff;
+        color: white;
+        text-transform: uppercase;
+        }
+
+        tr:nth-child(even) td {
+        background-color: #f2f2f2;
+        }
+
+        td a {
+        color: #007bff;
+        text-decoration: none;
+        }
+
+        td a:hover {
+        text-decoration: underline;
+        }
+
+        .badge {
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 12px;
+        color: white;
+        }
+
+        .bg-success {
+        background-color: #28a745;
+        }
+
+        .bg-secondary {
+        background-color: #6c757d;
+        }
+
+        .bg-danger {
+        background-color: #dc3545;
+        }
+
+        .btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        font-size: 12px;
+        }
+
+        .btn-success {
+        background-color: #28a745;
+        }
+
+        .btn-primary {
+        background-color: #007bff;
+        }
+
+        .btn:hover {
+        opacity: 0.9;
+        }
+
+        .row.mb-2 {
+        text-align: center;
+        margin-bottom: 20px;
+        }
+
+        .delete-btn {
+        background-color: #dc3545;
+        }
+
+        .delete-btn:hover {
+        background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="text-warning"><b>Movies</b></h1>
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="row mb-3">
+            <a style="width:15%" href="/Home/Create" class="btn btn-primary" color: #007bff;">
+                <i class="bi bi-plus-circle"></i> Create New Movie
+            </a>
+        </div>
+    }
+    <table>
+        <thead >
+            <tr >
+                <th>#</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Trailer</th>
+                <th>Status</th>
+                <th>Cinema</th>
+                <th>Category</th>
+                <th>Actors</th>
+                @if (User.IsInRole("Admin")){
+                    <th>Actions</th>
+                }
+                
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <tr>
+                    <td>@(i + 1)</td>
+                    <td>@Model[i].Name</td>
+                    @* <td> class="text-warning">$@Model[i].Price</td> *@
+                    <td>  <p> <span class="badge bg-warning text-dark">$@Model[i].Price</span></p></td>
+                    <td>
+                        <a href="@Model[i].TrailerUrl" target="_blank">Watch Trailer</a>
+                    </td>
+                    <td>
+                        @if (DateTime.Now <= Model[i].EndDate)
+                        {
+                            <span class="badge bg-success">Available</span>
+                        }
+                        else if (Model[i].StartDate > DateTime.Now)
+                        {
+                            <span class="badge bg-secondary">Upcoming</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Expired</span>
+                        }
+                    </td>
+                    <td><a href="/Cinema/AllMoviesCinema/?cinemaId=@Model[i].CinemaId">@Model[i].Cinema.Name</a></td>
+                    <td><a href="/Category/AllMoviesCategory/?categoryId=@Model[i].CategoryId">@Model[i].Category.Name</a></td>
+                    <td>
+                        @foreach (var item in Model[i].ActorMovies)
+                        {
+                               
+                            <span>-  <b>@item.Actor.FirstName</b> </span>
+                            
+                            <br />
+                        }
+                    </td>
+                    @if (User.IsInRole("Admin")){
+                    <td>
+                        <a href="/Home/Edit?movieId=@Model[i].Id" class="btn btn-success">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </a>
+                        <a href="#" onclick="confirmDelete('@Model[i].Id');" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Delete
+                        </a>
+
+
+                    </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>
+<script>
+    function confirmDelete(movieId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `/Home/Delete?movieId=${movieId}`;
+            }
+        });
+    }
+</script>

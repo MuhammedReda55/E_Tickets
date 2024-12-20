@@ -1,0 +1,111 @@
+﻿@model List<Movie>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var priceElements = document.querySelectorAll(".price-value");
+            priceElements.forEach(function(element) {
+                element.style.color = "#e67e22";
+                element.style.fontWeight = "bold";
+                element.style.fontSize = "1.2em";
+            });
+        });
+    </script>
+}
+
+<div class="container mt-5">
+    <h2 class="text-center text-warning mb-4">Movies List</h2>
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4">
+                <div class="card movie-card shadow-lg border-light">
+                    <!-- Image Section -->
+                    <div class="movie-img-wrapper">
+                        <img src="~/movies/@item.ImgUrl" class="card-img-top img-fluid movie-img" alt="@item.Name">
+                    </div>
+
+                    <!-- Movie Details Section -->
+                    <div class="card-body">
+                        <!-- Movie Name -->
+                        <h5 class="card-title text-primary mb-3">@item.Name</h5>
+
+                        <!-- Price Section -->
+                        <p class="card-text">
+                            <strong>Price:</strong> <span class="price-value">$@item.Price</span>
+                        </p>
+
+                        <!-- Cinema Section -->
+                        <p class="card-text">
+                            <strong>Cinema:</strong> <a href="/Cinema/AllMoviesCinema/?cinemaId=@item.CinemaId">@item.Cinema.Name</a>
+                        </p>
+
+                        <!-- Dates -->
+                        <p class="card-text">
+                            <strong>Start Date:</strong> @(item.StartDate)
+                        </p>
+                        <p class="card-text">
+                            <strong>End Date:</strong> @(item.EndDate)
+                        </p>
+
+                        <!-- Category -->
+                        <p class="card-text">
+                            <strong>Category:</strong> <a href="/Category/AllMoviesCategory?categoryId=@item.CategoryId">@item.Category.Name</a>
+                        </p>
+
+                        <!-- Status Badge -->
+                        <p class="card-text">
+                            <strong>Status:</strong>
+                            @if (DateTime.Now <= item.EndDate)
+                            {
+                                <span class="badge bg-success">Available</span>
+                            }
+                            else if (item.StartDate > DateTime.Now)
+                            {
+                                <span class="badge bg-warning">Upcoming</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Expired</span>
+                            }
+                        </p>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="/Home/Details?movieId=@item.Id" class="btn btn-outline-success">More Details</a>
+                            <a href="/Home/BookTicket?movieId=@item.Id" class="btn btn-outline-primary">Book Ticket</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        /* Hover Effect for Image */
+        .movie-img-wrapper {
+            overflow: hidden;
+            position: relative;
+        }
+
+        .movie-img {
+            transition: transform 0.3s ease;
+        }
+
+        .movie-img-wrapper:hover .movie-img {
+            transform: scale(1.1);
+        }
+
+        /* Card Design Improvements */
+        .movie-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .movie-card:hover {
+                transform: translateY(-10px);
+                box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+            }
+    </style>
+}

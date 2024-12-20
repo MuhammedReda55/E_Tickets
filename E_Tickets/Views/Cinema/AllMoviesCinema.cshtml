@@ -1,0 +1,124 @@
+﻿@model List<Movie>
+
+@section Styles {
+    <style>
+        /* Card Styling */
+        .movie-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .movie-card:hover {
+                transform: scale(1.05);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            }
+
+            /* Image Hover Effect */
+            .movie-card img {
+                transition: transform 0.3s ease, filter 0.3s ease;
+                border-radius: 0.5rem 0.5rem 0 0;
+            }
+
+                .movie-card img:hover {
+                    transform: scale(1.1);
+                    filter: brightness(1.1);
+                }
+
+        /* Badge Styling */
+        .badge {
+            font-size: 0.9em;
+        }
+
+        /* Price Styling */
+        .price-value {
+            color: #e67e22;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        /* Links Styling */
+        .card-text a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+            .card-text a:hover {
+                text-decoration: underline;
+            }
+    </style>
+}
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-light movie-card">
+                <div class="row g-0">
+                    <!-- Image Section -->
+                    <div class="col-12">
+                        <img src="~/movies/@item.ImgUrl" class="img-fluid" alt="@item.Name">
+                    </div>
+
+                    <!-- Movie Details Section -->
+                    <div class="col-12 mt-2">
+                        <div class="card-body">
+                            <!-- Movie Name -->
+                            <h5 class="card-title mb-3 text-primary">@item.Name</h5>
+
+                            <!-- Price Section -->
+                            <p class="card-text">
+                                <strong>Price:</strong> <span class="price-value">$@item.Price</span>
+                            </p>
+
+                            <!-- Cinema Section -->
+                            <p class="card-text">
+                                <strong>Cinema:</strong>
+                                <a href="/Cinema/AllMoviesCinema/?cinemaId=@item.CinemaId">
+                                    @item.Cinema.Name
+                                </a>
+                            </p>
+
+                            <!-- Dates -->
+                            <p class="card-text">
+                                <strong>Start Date:</strong> @(item.StartDate)
+                            </p>
+                            <p class="card-text">
+                                <strong>End Date:</strong> @(item.EndDate)
+                            </p>
+
+                            <!-- Category -->
+                            <p class="card-text">
+                                <strong>Category:</strong>
+                                <a href="/Category/AllMoviesCategory?categoryId=@item.CategoryId">
+                                    @item.Category.Name
+                                </a>
+                            </p>
+
+                            <!-- Status Badge -->
+                            <p class="card-text">
+                                <strong>Status:</strong>
+                                @if (DateTime.Now <= item.EndDate)
+                                {
+                                    <span class="badge bg-success">Available</span>
+                                }
+                                else if (item.StartDate > DateTime.Now)
+                                {
+                                    <span class="badge bg-warning">Upcoming</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Expired</span>
+                                }
+                            </p>
+
+                            <!-- Buttons -->
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="/Home/Details?movieId=@item.Id" class="btn btn-outline-success">More Details</a>
+                                <a href="/Home/BookTicket?movieId=@item.Id" class="btn btn-outline-primary">Book Ticket</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

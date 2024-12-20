@@ -1,0 +1,51 @@
+﻿@model E_Tickets.Models.Cinema
+
+@{
+    ViewData["Title"] = "Create Cinema";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <!-- Page Title -->
+            <h2 class="text-center text-primary mb-4">Create Cinema</h2>
+
+            <!-- Form Section -->
+            <div class="card shadow-lg border-light">
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Name Field -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Name" class="form-label">Cinema Name</label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter cinema name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <!-- Address Field -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Address" class="form-label">Address</label>
+                            <input asp-for="Address" class="form-control" placeholder="Enter cinema address" />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="form-group text-center mt-4">
+                            <input type="submit" value="Create" class="btn btn-primary w-50" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Back Link -->
+            <div class="text-center mt-4">
+                <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial.cshtml">
+}

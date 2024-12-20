@@ -1,0 +1,136 @@
+﻿@model List<Movie>
+@section Styles {
+    <style>
+        .card-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .card-text {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .badge {
+            font-size: 0.85em;
+        }
+
+        .price-value {
+            color: #e67e22;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .img-thumbnail {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+            .img-thumbnail:hover {
+                transform: scale(1.05);
+            }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var modal = new bootstrap.Modal(document.getElementById('imageModal'));
+            var modalImg = document.getElementById("modalImage");
+
+            document.querySelectorAll(".img-thumbnail").forEach(function(image) {
+                image.addEventListener("click", function() {
+                    modalImg.src = this.src;
+                    modal.show();
+                });
+            });
+        });
+    </script>
+}
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-body p-0">
+                <img id="modalImage" src="" class="img-fluid w-100" alt="Movie Image">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Movies Grid -->
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-light">
+                <div class="row g-0">
+                    <!-- Image Section -->
+                    <div class="col-12">
+                        <img src="~/movies/@item.ImgUrl"
+                             class="img-fluid rounded-top img-thumbnail"
+                             alt="@item.Name">
+                    </div>
+
+                    <!-- Movie Details Section -->
+                    <div class="col-12 mt-2">
+                        <div class="card-body">
+                            <!-- Movie Name -->
+                            <h5 class="card-title mb-3">@item.Name</h5>
+
+                            <!-- Price Section -->
+                            <p class="card-text">
+                                <strong>Price:</strong> <span class="price-value">$@item.Price</span>
+                            </p>
+
+                            <!-- Cinema Section -->
+                            <p class="card-text">
+                                <strong>Cinema:</strong>
+                                <a href="/Cinema/AllMoviesCinema/?cinemaId=@item.CinemaId">@item.Cinema.Name</a>
+                            </p>
+
+                            <!-- Dates -->
+                            <p class="card-text">
+                                <strong>Start Date:</strong> @(item.StartDate)
+                            </p>
+                            <p class="card-text">
+                                <strong>End Date:</strong> @(item.EndDate)
+                            </p>
+
+                            <!-- Category -->
+                            <p class="card-text">
+                                <strong>Category:</strong>
+                                <a href="/Category/AllMoviesCategory?categoryId=@item.CategoryId">@item.Category.Name</a>
+                            </p>
+
+                            <!-- Status Badge -->
+                            <p class="card-text">
+                                <strong>Status:</strong>
+                                @if (DateTime.Now <= item.EndDate)
+                                {
+                                    <span class="badge bg-success">Available</span>
+                                }
+                                else if (item.StartDate > DateTime.Now)
+                                {
+                                    <span class="badge bg-warning">Upcoming</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Expired</span>
+                                }
+                            </p>
+
+                            <!-- Buttons -->
+                            <div class="d-flex justify-content-between mt-4">
+                                <a href="/Home/Details?movieId=@item.Id" class="btn btn-outline-success">More Details</a>
+                                <a href="/Home/BookTicket?movieId=@item.Id" class="btn btn-primary btn-sm">Book Ticket</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

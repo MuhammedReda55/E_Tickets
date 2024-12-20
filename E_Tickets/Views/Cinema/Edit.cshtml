@@ -1,0 +1,54 @@
+﻿@model E_Tickets.Models.Cinema
+
+@{
+    ViewData["Title"] = "Edit Cinema";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <!-- Page Title -->
+            <h2 class="text-center text-warning mb-4">Edit Cinema</h2>
+
+            <!-- Form Section -->
+            <div class="card shadow-lg border-light">
+                <div class="card-body">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- Hidden Field for ID -->
+                        <input type="hidden" asp-for="Id" />
+
+                        <!-- Name Field -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Name" class="form-label">Cinema Name</label>
+                            <input asp-for="Name" class="form-control" placeholder="Enter cinema name" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <!-- Address Field -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Address" class="form-label">Address</label>
+                            <input asp-for="Address" class="form-control" placeholder="Enter cinema address" />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="form-group text-center mt-4">
+                            <input type="submit" value="Save" class="btn btn-success w-50" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Back Link -->
+            <div class="text-center mt-4">
+                <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial.cshtml">
+}

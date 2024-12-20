@@ -1,0 +1,141 @@
+﻿@model E_Tickets.Models.Movie
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Movie</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="TrailerUrl" class="control-label"></label>
+                <input asp-for="TrailerUrl" class="form-control" />
+                <span asp-validation-for="TrailerUrl" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="ImgUrl" class="control-label"></label>
+                <input type="file" class="form-control" name="file" accept="image/*" onchange="previewImage(event)" />
+                <span asp-validation-for="ImgUrl" class="text-danger"></span>
+            </div>
+            <!-- Image Preview -->
+            <div class="mb-3">
+                <img id="imagePreview" src="#" alt="Image Preview" style="max-width: 30%; height: auto; display: none;" />
+            </div>
+            
+            <div class="form-group mb-3">
+                <label asp-for="StartDate" class="control-label"></label>
+                <input asp-for="StartDate" class="form-control" />
+                <span asp-validation-for="StartDate" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="EndDate" class="control-label"></label>
+                <input asp-for="EndDate" class="form-control" />
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>
+            
+           
+            <div class="mb-3">
+                <label asp-for="Cinema" class="control-label"></label>
+                <select class="form-select" name="CinemaId">
+                    @foreach (var item in (List<Cinema>)ViewData["cinema"])
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
+                </select>
+                <span class="text-danger" asp-validation-for="@Model.CinemaId"></span>
+
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Category" class="form-label fw-bold text-primary"></label>
+                <select class="form-select select-category" name="CategoryId">
+                    @foreach (var item in (List<Category>)ViewData["category"])
+                    {
+                        <option value="@item.Id">@item.Name</option>
+                    }
+                </select>
+                <span class="text-danger" asp-validation-for="@Model.CategoryId"></span>
+
+            </div>
+            <div class="mb-3">
+                <label asp-for="ActorMovies" class="form-label fw-bold text-primary">Actors</label>
+                <select class="form-select select-actors" name="ActorIds" multiple>
+                    @foreach (var item in (List<Actor>)ViewData["actor"])
+                    {
+                        <option value="@item.Id">@item.FirstName @item.LastName</option>
+                    }
+                </select>
+                <span class="text-danger" asp-validation-for="@Model.ActorMovies"></span>
+            </div>
+
+            
+
+
+            
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <script>
+        function previewImage(event) {
+            const input = event.target;
+            const imagePreview = document.getElementById("imagePreview");
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = "block";
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</div>
+
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section selects {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Initialize Select2 for actors select
+            $('.select-actors').select2({
+                placeholder: "Select actors...",
+                allowClear: true,
+                width: '100%' // Makes the dropdown take the full width
+            });
+        });
+    </script>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial.cshtml">
+}

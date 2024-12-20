@@ -1,0 +1,93 @@
+﻿@model Movie
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var priceElements = document.querySelectorAll(".price-value");
+            priceElements.forEach(function(element) {
+                element.style.color = "#e67e22";
+                element.style.fontWeight = "bold";
+                element.style.fontSize = "1.2em";
+            });
+        });
+    </script>
+}
+<div class="col-md-8 mb-4">
+    <!-- Adjusted the column size -->
+    <div class="card shadow-sm border-light">
+        <div class="row g-0">
+            <!-- Image Section -->
+            <div class="col-md-4">
+                <img src="~/movies/@Model.ImgUrl" class="img-fluid rounded-start" alt="@Model.Name">
+            </div>
+
+            <!-- Movie Details Section -->
+            <div class="col-md-6">
+                <div class="card-body">
+                    <!-- Movie Name -->
+                    <h5 class="text-success-emphasis mb-3"><b>@Model.Name</b></h5>
+
+                    <!-- Cinema Description -->
+                    <h6 class="card-subtitle mb-3 text-muted">@Model.Description</h6>
+
+                    <!-- Price Section -->
+                    <p class="card-text">
+                    <p><b>Price:</b> <span class="badge bg-warning text-dark">$@Model.Price</span></p>
+                    </p>
+
+                    <!-- Cinema Section -->
+                    <p class="card-text">
+                        <b>Cinema:</b><a href ="/Cinema/AllMoviesCinema/?cinemaId=@Model.CinemaId">@Model.Cinema.Name</a>
+                    </p>
+
+                    <!-- Dates -->
+                    <p class="card-text">
+                        <b>Start Date:</b> @(Model.StartDate)
+                    </p>
+                    <p class="card-text">
+                        <b>End Date:</b> @(Model.EndDate)
+                    </p>
+                    <!-- Category -->
+                    <p class="card-text">
+                        <b>Category:</b><a href="/Category/AllMoviesCategory/?categoryId=@Model.CategoryId">@Model.Category.Name</a>
+                    </p>
+
+                    <!-- Actor -->
+                     <div class="col-md-6"> 
+                       
+                          
+                        @foreach (var item in Model.ActorMovies)
+                        { 
+                           
+                               <a href="/Actor/Index?actorId=@item.Actor.Id">   
+                            <img src="~/cast/@item.Actor.ProfilePicture" class="img-fluid rounded-start" alt="@item.Actor.ProfilePicture" />
+                             </a>  
+
+                        } 
+                        <br /><br /> 
+                         <p class="card-text"> 
+                             <video controls src="@Model.TrailerUrl"></video> 
+                         </p> 
+                       <p class="card-text"> 
+                             <b>Views:</b> @Model.Views 
+                         </p> 
+
+
+                     </div> 
+
+
+
+
+
+                    <!-- Buttons -->
+                    <div class="mt-4">
+
+                        <a href="/Home/BookTicket?movieId=@Model.Id" class="btn btn-outline-primary">Book Ticket</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

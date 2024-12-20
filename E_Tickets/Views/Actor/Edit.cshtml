@@ -1,0 +1,84 @@
+﻿@model E_Tickets.Models.Actor
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1 class="text-center text-success mb-4">Edit Actor</h1>
+
+<h4 class="text-center mb-4">Update Actor Details</h4>
+<hr />
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <!-- Hidden Id Field -->
+            <input type="hidden" asp-for="Id" />
+
+            <!-- First Name -->
+            <div class="form-group mb-3">
+                <label asp-for="FirstName" class="control-label">First Name</label>
+                <input style="width:100%" asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+
+            <!-- Last Name -->
+            <div class="form-group mb-3">
+                <label asp-for="LastName" class="control-label">Last Name</label>
+                <input style="width:100%" asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+
+            <!-- Bio -->
+            <div class="form-group mb-3">
+                <label asp-for="Bio" class="control-label">Bio</label>
+                <textarea style="width:100%" asp-for="Bio" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Bio" class="text-danger"></span>
+            </div>
+
+            <!-- Profile Picture -->
+            <div class="form-group mb-3">
+                <label asp-for="ProfilePicture" class="control-label">Profile Picture</label>
+                <input type="file" class="form-control" name="file" accept="image/*" onchange="previewImage(event)" />
+                <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+            </div>
+
+            <!-- Image Preview -->
+            <div class="mb-3 text-center">
+                <img id="imagePreview" src="~/cast/@Model.ProfilePicture" alt="Image Preview" style="max-width: 50%; height: auto; display: block;" />
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-group">
+                <input type="submit" value="Save Changes" class="btn btn-primary btn-block" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="text-center mt-3">
+    <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial.cshtml">
+}
+
+    <script>
+        function previewImage(event) {
+            const input = event.target;
+            const imagePreview = document.getElementById("imagePreview");
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = "block";
+                };
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
