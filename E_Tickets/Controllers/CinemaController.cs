@@ -20,12 +20,21 @@ namespace E_Tickets.Controllers
 
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string? query = null, int PageNumber = 0)
         {
             //var cinema = _context.Cinemas.ToList();
-            var cinema = cinemaRepository.Get().ToList();
+            var cinema = cinemaRepository.Get();
+            if (query != null)
+            {
+                query = query.Trim();
+                cinema = cinema.Where(e => e.Name.Contains(query));
+            }
+            if (PageNumber > 0)
+            {
+                cinema = cinema.Skip((PageNumber - 1) * 3).Take(3);
+            }
 
-            return View(cinema);
+            return View(cinema.ToList());
         }
         public IActionResult AllMoviesCinema(int cinemaId)
         {

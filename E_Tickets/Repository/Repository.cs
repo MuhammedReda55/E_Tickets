@@ -89,6 +89,10 @@ namespace E_Tickets.Repository
 
             return query;
         }
+        public void Commit()
+        {
+            _dbContext.SaveChanges();
+        }
 
     }
 }

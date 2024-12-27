@@ -18,11 +18,21 @@ namespace E_Tickets.Controllers
                 this.categoryRepository = categoryRepository;
             }
         [AllowAnonymous]
-            public IActionResult Index()
+            public IActionResult Index(string? query = null, int PageNumber = 0)
             {
                 //var category = _context.Categories.ToList();
-                var category = categoryRepository.Get().ToList();
-                return View(category);
+                var category = categoryRepository.Get();
+            if(query != null)
+            {
+                query = query.Trim();
+                 category = category.Where(e=>e.Name.Contains(query));
+            }
+            if (PageNumber > 0)
+            {
+                category = category.Skip((PageNumber - 1) * 3).Take(3);
+            }
+           
+                return View(category.ToList());
             }
             public IActionResult AllMoviesCategory(int categoryId)
             {

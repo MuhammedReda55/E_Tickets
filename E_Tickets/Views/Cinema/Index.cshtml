@@ -57,9 +57,18 @@
     <div class="row mb-2">
         <a style="width:20%" class="btn btn-primary" href="/Cinema/Create"> <i class="bi bi-plus-circle"></i> Create New Category</a>
     </div>
+	<div class="rw mb-2">
+		<div class="col-4">
+            <form class="d-flex">
+                <input type="text" name="query" class="form-control mx-2" placeholder="search...">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
     <table>
         <thead>
             <tr>
+                <th class="text-danger">#</th>
                 <th class="text-danger">Name</th>
                 <th class="text-danger">Movies</th>
                 @* <th class="text-danger">Description</th> *@
@@ -71,22 +80,23 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @for(int i=0;i<Model.Count();i++)
             {
                 <tr>
-                    <td>@item.Name</td>
-                    <td><a class="text-success" href="/Cinema/AllMoviesCinema?cinemaId=@item.Id">All Movies</a></td>
+                    <td>@(i+1)</td>
+                    <td>@Model[i].Name</td>
+                    <td><a class="text-success" href="/Cinema/AllMoviesCinema?cinemaId=@Model[i].Id">All Movies</a></td>
                     @* <td>@item.Description</td> *@
-                    <td>@item.Address</td>
+                    <td>@Model[i].Address</td>
                     <td>
-                        <a href="/Cinema/Edit?cinemaId=@item.Id" class="btn btn-success">
+                        <a href="/Cinema/Edit?cinemaId=@Model[i].Id" class="btn btn-success">
                             <i class="bi bi-pencil-square"></i> Edit
                         </a>
-                        <a href="/Cinema/Delete?id=@item.Id"
+                        <a href="/Cinema/Delete?id=@Model[i].Id"
                            class="btn btn-danger"
                            data-bs-toggle="modal"
                            data-bs-target="#deleteModal"
-                           data-id="@item.Id">
+                           data-id="@Model[i].Id">
                             <i class="bi bi-trash"></i> Delete
 
 
@@ -98,6 +108,24 @@
 
         </tbody>
     </table>
+
+    <br />
+    <br />
+
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+
+            <li class="page-item"><a class="page-link" href="/Cinema/Index">Previous</a></li>
+            @for (int i = 0; i < Math.Ceiling((double)Model.Count() / 3); i++)
+            {
+
+                <li class="page-item"><a class="page-link" href="/Cinema/Index?PageNumber=@(i+1)">@(i + 1)</a></li>
+
+
+            }
+        </ul>
+    </nav>
+
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

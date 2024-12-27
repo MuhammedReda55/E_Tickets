@@ -28,6 +28,7 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public virtual DbSet<Movie> Movies { get; set; }
     public virtual DbSet<ActorMovie> ActorMovies { get; set; }
     public virtual DbSet<CinemaRequest> CinemaRequests { get; set; }
+    public virtual DbSet<Cart> Carts { get; set; }
    
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -92,6 +93,8 @@ public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
 public DbSet<E_Tickets.Models.ViewModels.ForgotPasswordVM> ForgotPasswordVM { get; set; } = default!;
+
+public DbSet<E_Tickets.Models.ViewModels.ChanagePasswordVM> ChanagePasswordVM { get; set; } = default!;
 
 
 }

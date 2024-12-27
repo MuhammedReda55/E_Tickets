@@ -4,6 +4,9 @@ using E_Tickets.Repository;
 using Microsoft.EntityFrameworkCore;
 using E_Tickets.Models;
 using Microsoft.AspNetCore.Identity;
+using Stripe;
+using E_Tickets.Utility;
+using E_commerce.Utility;
 
 namespace E_Tickets
 {
@@ -17,11 +20,22 @@ namespace E_Tickets
             builder.Services.AddControllersWithViews();
 
             builder.Services.AddControllersWithViews();
+
+            builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+
+            StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
+
+
             builder.Services.AddDbContext<ApplicationDbContext>(
                 option => option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
                 );
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.Lockout.AllowedForNewUsers = true; 
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); 
+                options.Lockout.MaxFailedAccessAttempts = 5; 
+            })
            .AddEntityFrameworkStores<ApplicationDbContext>()
            .AddDefaultTokenProviders();
 
@@ -31,6 +45,8 @@ namespace E_Tickets
             builder.Services.AddScoped<IActorRepository, ActorRepository>();
             builder.Services.AddScoped<IActorMovieRepository, ActorMovieRepository>();
             builder.Services.AddScoped<IRequestCinemaRepository, RequestCinemaRepository>();
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
+            builder.Services.AddTransient<IEmailSender, EmailSender>();
 
             var app = builder.Build();
 
@@ -51,7 +67,7 @@ namespace E_Tickets
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Account}/{action=Login}/{id?}");
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }

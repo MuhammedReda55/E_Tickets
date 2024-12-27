@@ -47,7 +47,7 @@
                             <!-- الأزرار -->
                             <div class="card-footer bg-light d-flex justify-content-between">
                                 <a href="/Home/Details?movieId=@item.Id" class="btn btn-sm btn-outline-primary rounded-pill">More Details</a>
-                                <a href="/Home/BookTicket?movieId=@item.Id" class="btn btn-sm btn-success rounded-pill">Book Ticket</a>
+                                <a href="/Home/Details?movieId=@item.Id" class="btn btn-sm btn-success rounded-pill">Book Ticket</a>
                             </div>
                         </div>
                     </div>
@@ -56,3 +56,16 @@
         }
     </div>
 </div>
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+
+        <li class="page-item"><a class="page-link" href="/Home/Index">Previous</a></li>
+        @for (int i = 0; i < Math.Ceiling((double)Model.Count() / 3); i++)
+        {
+
+            <li class="page-item"><a class="page-link" href="/Home/Index?PageNumber=@(i+1)">@(i + 1)</a></li>
+
+
+        }
+    </ul>
+</nav>

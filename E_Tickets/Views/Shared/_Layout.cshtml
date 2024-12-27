@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿ @using Microsoft.AspNetCore.Identity
+ @inject UserManager<ApplicationUser> UserManeger
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -15,73 +17,76 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg bg-body-tertiary">
-            <!-- Logo -->
-            <a class="navbar-brand" href="/">
-                <img src="~/logo/logo.png" alt="Website Logo" width="100">
-            </a>
-            <!-- Toggler Button for Small Screens -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
+        <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/Home/Index">Movie Point</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <!-- Logo -->
+                <a class="navbar-brand d-flex align-items-center" href="/">
+                    <img src="~/logo/logo.png" alt="Website Logo" width="100" class="me-2">
+                    <span class="fw-bold text-primary">Movie Point</span>
+                </a>
+
+                <!-- Toggler Button for Small Screens -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <!-- Navigation Links -->
                 <div class="collapse navbar-collapse" id="navbarNav">
+                    <!-- Navigation Links -->
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <!-- Home -->
                         <li class="nav-item">
-                            <a class="nav-link active" href="/Home/Index">
-                                Home
-                                <span class="visually-hidden">(current)</span>
-                            </a>
+                            <a class="nav-link active fw-bold" href="/Home/Index">Home</a>
                         </li>
 
-                        @if(User.IsInRole("Admin")){
-                            <!-- Dropdown -->
+                        <!-- Admin Dropdown -->
+                        @if (User.IsInRole("Admin"))
+                        {
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Management</a>
+                                <a class="nav-link dropdown-toggle fw-bold" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Management</a>
                                 <div class="dropdown-menu">
                                     <h6 class="dropdown-header">Management System</h6>
                                     <a class="dropdown-item" href="/Category/Index">Categories</a>
                                     <a class="dropdown-item" href="/Cinema/Index">Cinema</a>
                                     <a class="dropdown-item" href="/Actor/AllActor">Actors</a>
                                     <a class="dropdown-item" href="/RequestCinema/Index">RequestCinema</a>
-                                   
+                                    <a class="dropdown-item" href="/Account/Users">Users</a>
                                     <div class="dropdown-divider"></div>
                                 </div>
                             </li>
                         }
+
+                        <!-- All Movies -->
                         <li class="nav-item">
-
-
-                            <a class="nav-link active" href="/Home/AllFilms">All Movies</a>
-
-                               
+                            <a class="nav-link fw-bold" href="/Home/AllFilms">All Movies</a>
                         </li>
 
-
+                        <!-- Cart -->
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/Cart/Index">
+                                <i class="bi bi-cart-fill"></i>
+                            </a>
+                        </li>
                     </ul>
 
                     <!-- User Authentication and Search -->
                     <ul class="navbar-nav">
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Profile">
-                                    Welcome @User.Identity.Name
+                            <!-- Profile and Welcome Message -->
+                            <li class="nav-item dropdown d-flex align-items-center">
+                                <a class="nav-link dropdown-toggle d-flex align-items-center fw-bold text-dark" data-bs-toggle="dropdown" href="#" role="button">
+                                    <img src="~/movies/@UserManeger.GetUserAsync(User).Result.photo" class="rounded-circle me-2"  width="30" height="30" style="object-fit: cover;">
+                                    Welcome, @User.Identity.Name
                                 </a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" asp-controller="Account" asp-action="Profile">My Profile</a>
+                                    <a class="dropdown-item" asp-controller="Account" asp-action="Logout">Logout</a>
+                                </div>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
-                            </li>
-                            <li class="nav-item">
-                                <form class="d-flex ms-3" action="/Home/Search">
+
+                            <!-- Search Form -->
+                            <li class="nav-item ms-3">
+                                <form class="d-flex" action="/Home/Search">
                                     <input class="form-control me-2" type="search" name="name" placeholder="Search for movie..." aria-label="Search">
                                     <button class="btn btn-primary" type="submit">Search</button>
                                 </form>
@@ -89,20 +94,19 @@
                         }
                         else
                         {
+                            <!-- Login/Register -->
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                                <a class="nav-link fw-bold text-dark" asp-controller="Account" asp-action="Login">Login</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
+                                <a class="nav-link fw-bold text-dark" asp-controller="Account" asp-action="Register">Register</a>
                             </li>
                         }
                     </ul>
-
-                    <!-- Search Bar -->
-                    
                 </div>
             </div>
         </nav>
+
     </header>
 
     <div class="container">

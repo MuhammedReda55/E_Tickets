@@ -1,4 +1,4 @@
-﻿@model E_Tickets.Models.Cinema
+﻿@model E_Tickets.Models.CinemaRequest
 
 @{
     ViewData["Title"] = "Create Cinema";
@@ -29,6 +29,8 @@
                             <input asp-for="Address" class="form-control" placeholder="Enter cinema address" />
                             <span asp-validation-for="Address" class="text-danger"></span>
                         </div>
+                        
+                        
 
                         <!-- Submit Button -->
                         <div class="form-group text-center mt-4">

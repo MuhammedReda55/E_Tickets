@@ -25,15 +25,25 @@ namespace E_Tickets.Controllers
                 //var actor = actorRepository.GetOne(filter: e => e.Id == actorId, includeProps: [m => m.Movies]);
                 var actor = actorRepository.GetWithIncludes(filter: e => e.Id == actorId,include:
                     e=>e.Include(e=>e.ActorMovies).ThenInclude(e=>e.Movie)).FirstOrDefault();
+            
 
-                return View(actor);
+            return View(actor);
             }
-            public IActionResult AllActor(int actorId)
+            public IActionResult AllActor(int actorId, string? query = null, int PageNumber = 0)
             {
                 //var actors = _context.Actors.ToList();
-                var actors = actorRepository.Get().ToList();
+                var actor = actorRepository.Get();
+            if (query != null)
+            {
+                query = query.Trim();
+                actor = actor.Where(e => e.FirstName.Contains(query) || e.LastName.Contains(query));
+            }
+            if (PageNumber > 0)
+            {
+                actor = actor.Skip((PageNumber - 1) * 3).Take(3);
+            }
 
-                return View(actors);
+            return View(actor.ToList());
             }
             public IActionResult Create()
             {

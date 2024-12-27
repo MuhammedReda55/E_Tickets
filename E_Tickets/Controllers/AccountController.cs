@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 namespace E_Tickets.Controllers
@@ -37,16 +38,19 @@ namespace E_Tickets.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(ApplicationUserVM UserVM)
         {
+            
             if (ModelState.IsValid) {
                 ApplicationUser user = new()
                 {
                     UserName = UserVM.UserName,
                     Email = UserVM.Email,
                     Address = UserVM.Address,
-                    Name = UserVM.Name
+                    Name = UserVM.Name,
+                    photo = "~/default-photo.png"
 
                 };
-             var result =  await  userManager.CreateAsync(user, UserVM.Password);
+               
+                var result =  await  userManager.CreateAsync(user, UserVM.Password);
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(user, "Customer");
@@ -61,6 +65,7 @@ namespace E_Tickets.Controllers
             }
             return View();
         }
+        
         public  IActionResult Login()
         {
             return View();
@@ -70,16 +75,21 @@ namespace E_Tickets.Controllers
         {
             if (ModelState.IsValid)
             {
-                var appUserWithEmail = await userManager.FindByEmailAsync(loginVM.Account);
-                var appUserWithUserName = await userManager.FindByNameAsync(loginVM.Account);
+                var user = await userManager.FindByEmailAsync(loginVM.Account)?? await userManager.FindByNameAsync(loginVM.Account);
+                
 
-                if (appUserWithEmail != null || appUserWithUserName != null)
+                if (user != null )
                 {
-                    var result = await userManager.CheckPasswordAsync(appUserWithEmail ?? appUserWithUserName, loginVM.Password);
+                     if (user.LockoutEnd != null && user.LockoutEnd > DateTime.UtcNow)
+                         {
+                               ModelState.AddModelError(string.Empty, "Your account is locked.");
+                               return View(loginVM);
+                         }
+                    var result = await userManager.CheckPasswordAsync(user, loginVM.Password);
 
                     if (result)
                     {
-                        await signInManager.SignInAsync(appUserWithEmail ?? appUserWithUserName, loginVM.RemeberMe);
+                        await signInManager.SignInAsync(user, loginVM.RemeberMe);
                         return RedirectToAction("Index", "Home");
                     }
                     else
@@ -100,17 +110,46 @@ namespace E_Tickets.Controllers
             signInManager.SignOutAsync();
             return RedirectToAction("Login", "Account");
         }
-       
-        public IActionResult ForgetPassword()
+
+        public IActionResult CheckEmail()
         {
             return View();
         }
+        [HttpPost]
+        public async Task<IActionResult> CheckEmail(ForgotPasswordVM forgotPasswordVM)
+        {
+            var user = await userManager.FindByEmailAsync(forgotPasswordVM.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError("Email", "البريد الإلكتروني غير موجود.");
+                return View(forgotPasswordVM);
+            }
+            TempData["Email"] = forgotPasswordVM.Email;
+            return RedirectToAction("ForgetPassword", "Account");
+        }
+
+        public IActionResult ForgetPassword()
+        {
+
+            return View();
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> ForgetPassword(ForgotPasswordVM forgotPasswordVM)
         {
             if (ModelState.IsValid)
             {
-                var user = await userManager.FindByEmailAsync(forgotPasswordVM.Email);
+
+                var email = TempData["Email"] as string;
+                if (email == null)
+                {
+                    ModelState.AddModelError(string.Empty, "البريد الإلكتروني غير موجود.");
+                    return RedirectToAction("CheckEmail");
+                }
+
+                var user = await userManager.FindByEmailAsync(email);
+
                 if (user == null)
                 {
                     ModelState.AddModelError(string.Empty, "البريد الإلكتروني غير موجود.");
@@ -134,14 +173,191 @@ namespace E_Tickets.Controllers
             return View(forgotPasswordVM);
        
         }
-        public IActionResult Profile(ApplicationUserVM? UserVM)
+
+        public IActionResult ChangePassword()
         {
-            var user = userManager.FindByIdAsync("UserVM.Id");
+
+            return View();
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChanagePasswordVM chanagePasswordVM)
+        {
             
+            if (ModelState.IsValid)
+            {
+
+                var user = await userManager.GetUserAsync(User);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "البريد الإلكتروني غير موجود.");
+                    //return RedirectToAction("CheckEmail");
+                }
+
+                //var user = await userManager.FindByEmailAsync(email);
+
+                //if (user == null)
+                //{
+                //    ModelState.AddModelError(string.Empty, "البريد الإلكتروني غير موجود.");
+                //    return View();
+                //}
+                var checkPasswordResult = await userManager.CheckPasswordAsync(user, chanagePasswordVM.OldPassword);
+                if (!checkPasswordResult)
+                {
+                    ModelState.AddModelError("OldPassword", "كلمة السر القديمة غير صحيحة");
+                    return View(chanagePasswordVM);
+                }
+                var result = await userManager.RemovePasswordAsync(user);
+
+                if (result.Succeeded)
+                {
+                    result = await userManager.AddPasswordAsync(user, chanagePasswordVM.NewPassword);
+                    TempData["message"] = "تم تغيير كلمة المرور بنجاح.";
+                    return RedirectToAction("Profile", "Account");
+
+                }
+
+                ModelState.AddModelError(string.Empty, "حدث خطأ أثناء إزالة كلمة المرور القديمة.");
+                return View(chanagePasswordVM);
+
+            }
+            return View(chanagePasswordVM);
+
+        }
+
+
+
+        public async Task<IActionResult> Profile()
+        {
+            var user = await userManager.GetUserAsync(User);
+            return View(model: new ApplicationUserVM()
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                Name = user.Name,
+                Address = user.Address
+            });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Profile(ApplicationUserVM userVM)
+        {
+            var user = await userManager.GetUserAsync(User);
+            user.UserName = userVM.UserName;
+            user.Email = userVM.Email;
+            user.Name = userVM.Name;
+            user.Address = userVM.Address;
+
+            await userManager.UpdateAsync(user);
+            TempData["message"] = "تم تحديث البيانات بنجاح";
+
+            return RedirectToAction("Profile", "Account");
+        }
+        [HttpPost]
+        public async Task<IActionResult> updatePhoto(IFormFile photo)
+        {
+            var user = await userManager.GetUserAsync(User);
+
+            if (photo != null && photo.Length > 0)
+            {
+                // Genereate name
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(photo.FileName);
+
+                // Save in wwwroot
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\movies", fileName);
+
+                using (var stream = System.IO.File.Create(filePath))
+                {
+                    photo.CopyTo(stream);
+                }
+
+                // Save in db
+                user.photo = fileName;
+                await userManager.UpdateAsync(user);
+            }
+
+            TempData["message"] = "تم تحديث البيانات بنجاح";
+
+            return RedirectToAction("Profile", "Account");
+        }
+
+        public async Task<IActionResult> Users()
+        {
+            var users = userManager.Users.ToList();
+
+            
+            var userRoles = new List<UserWithRolesVM>();
+
+            foreach (var user in users)
+            {
+                var roles = await userManager.GetRolesAsync(user);
+                userRoles.Add(new UserWithRolesVM
+                {
+                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    Address = user.Address,
+                    Roles = roles.ToList(),
+                    IsBlocked = user.LockoutEnd != null && user.LockoutEnd > DateTime.UtcNow
+                });
+            }
+
+            return View(userRoles);
+        }
+        [HttpPost]
+        public async Task<IActionResult> BlockUser(string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+            if (user != null)
+            {
+                if (user.LockoutEnd != null && user.LockoutEnd > DateTime.UtcNow)
+                {
+                    
+                    user.LockoutEnd = null;
+                }
+                else
+                {
+                    user.LockoutEnd = DateTime.UtcNow.AddYears(100);
+                }
+
+                await userManager.UpdateAsync(user);
+
+                TempData["message"] = $"User {user.UserName} status updated.";
+                
+            }
            
 
-                return View(user);
+            return RedirectToAction("Users");
         }
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            
+            var user = await userManager.FindByIdAsync(id);
+
+            
+            if (user != null)
+            {
+                
+                var result = await userManager.DeleteAsync(user);
+
+                
+                if (result.Succeeded)
+                {
+                    TempData["message"] = $"User {user.UserName} is Deleted Sueccessfully";
+                    return RedirectToAction("Users");
+                }
+                else
+                {
+                    return BadRequest("Error deleting user.");
+                }
+            }
+
+            
+            return NotFound("User not found.");
+        }
+
+
 
 
     }

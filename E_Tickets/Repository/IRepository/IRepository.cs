@@ -13,5 +13,6 @@ namespace E_Tickets.Repository.IRepository
         public IQueryable<T> GetWithIncludes(Expression<Func<T, bool>>? filter = null,
                                      Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null,
                                      bool tracked = true);
+        public void Commit();
     }
 }

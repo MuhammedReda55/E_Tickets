@@ -77,13 +77,27 @@
 
 
 
-
+                     <br />
 
                     <!-- Buttons -->
-                    <div class="mt-4">
+                    <div class="row mb-4 justify-content-center">
+                        <div class="col-md-6 col-sm-8 col-12">
+                            <form asp-action="AddToCart" asp-controller="Cart" class="d-flex align-items-center">
+                                <input type="hidden" name="MovieId" value="@Model.Id" />
 
-                        <a href="/Home/BookTicket?movieId=@Model.Id" class="btn btn-outline-primary">Book Ticket</a>
+                                <div class="input-group">
+                                    <!-- حقل إدخال العدد -->
+                                    <input type="number" name="count" class="form-control" value="1"  min="1" aria-label="Count">
+                                    
+                                    <!-- زر الإرسال -->
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-cart-plus"></i> Book Ticket
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>

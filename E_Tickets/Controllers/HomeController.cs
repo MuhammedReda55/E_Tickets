@@ -37,13 +37,17 @@ namespace E_Tickets.Controllers
 
 
         [AllowAnonymous]
-        public IActionResult Index()
+        public IActionResult Index( int PageNumber = 0)
         {
 
 
-            var movies = movieRepository.Get(includeProps: [c => c.Category, c => c.Cinema]).ToList();
+            var movies = movieRepository.Get(includeProps: [c => c.Category, c => c.Cinema]);
             //var movies = movieRepository.Get(includeProps:e=>e.Include(e=>e.Category).Include(c=>c.Cinema) ).ToList();
-            return View(movies);
+            if (PageNumber > 0)
+            {
+                movies = movies.Skip((PageNumber - 1) * 3).Take(5);
+            }
+            return View(movies.ToList());
         }
         [AllowAnonymous]
         public IActionResult Details(int movieId)

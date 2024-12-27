@@ -19,6 +19,6 @@ namespace E_Tickets.Models
         [ValidateNever]
         public virtual ICollection<Movie> Movies { get; set; } = new List<Movie>();
         
-        public string status { get; set; }
+        public string? status { get; set; }
     }
 }

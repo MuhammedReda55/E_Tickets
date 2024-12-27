@@ -7,10 +7,10 @@
 <div class="container mt-5">
     <h1 class="text-center text-primary"><b>Request Cinemas</b></h1>
     <p class="text-end">
-        <a asp-action="Create" class="btn btn-primary btn-sm">Create New</a>
+        <a asp-action="CreateNewRequest" class="btn btn-primary btn-sm">Create New</a>
     </p>
     <table class="table table-bordered table-hover table-striped">
-        <thead class ="table-dark">
+        <thead class="table-dark">
             <tr>
                 <th class="text-center">Status</th>
                 <th class="text-center">@Html.DisplayNameFor(model => model.Name)</th>
@@ -41,8 +41,11 @@
                     <td>@Html.DisplayFor(modelItem => item.Description)</td>
                     <td>@Html.DisplayFor(modelItem => item.Address)</td>
                     <td class="text-center">
-                        <a href="" class="btn btn-success btn-sm">Accept</a>
-                        <a href="" class="btn btn-danger btn-sm">Reject</a>
+                        @if (item.status == "pending")
+                        {
+                            <a href="/RequestCinema/AcceptRequest?cinemaId=@item.Id"  class="btn btn-success btn-sm">Accept</a>
+                            <a href="/RequestCinema/RejectRequest?cinemaId=@item.Id"  class="btn btn-danger btn-sm">Reject</a>
+                        }
                     </td>
                 </tr>
             }
