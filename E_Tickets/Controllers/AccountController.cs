@@ -1,8 +1,9 @@
 ﻿using E_Tickets.Models;
+using E_Tickets.Utility;
 using E_Tickets.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
+//using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
@@ -15,13 +16,15 @@ namespace E_Tickets.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly RoleManager<IdentityRole> roleManager;
+        private readonly IEmailSender emailSender;
 
         public AccountController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser>
-            signInManager,RoleManager<IdentityRole> roleManager)
+            signInManager,RoleManager<IdentityRole> roleManager, IEmailSender emailSender)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.roleManager = roleManager;
+            this.emailSender = emailSender;
         }
         public async Task<IActionResult> Register()
         {
@@ -38,8 +41,8 @@ namespace E_Tickets.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(ApplicationUserVM UserVM)
         {
-            
-            if (ModelState.IsValid) {
+            if (ModelState.IsValid)
+            {
                 ApplicationUser user = new()
                 {
                     UserName = UserVM.UserName,
@@ -47,26 +50,45 @@ namespace E_Tickets.Controllers
                     Address = UserVM.Address,
                     Name = UserVM.Name,
                     photo = "~/default-photo.png"
-
                 };
-               
-                var result =  await  userManager.CreateAsync(user, UserVM.Password);
+
+                var result = await userManager.CreateAsync(user, UserVM.Password);
                 if (result.Succeeded)
                 {
+                    // Add user to the "Customer" role
                     await userManager.AddToRoleAsync(user, "Customer");
-                    await signInManager.SignInAsync(user, false);
-                    return RedirectToAction("Index", "Home");
+
+                    // Generate the login URL
+                    string loginUrl = Url.Action("Login", "Account", null, protocol: Request.Scheme);
+
+                    // Prepare the email content
+                    string emailContent = $@"
+<html>
+<body>
+    <h1>Registration Successful!</h1>
+    <p>Thank you for registering with us!</p>
+    <p>Click the link below to log in:</p>
+    <a href='{loginUrl}'>Go to Login</a>
+</body>
+</html>";
+
+                    // Send the email
+                    await emailSender.SendEmailAsync(user.Email, "Registration Successful", emailContent);
+
+                    // Redirect to the Register page
+                    return RedirectToAction("Register", "Account");
                 }
                 else
                 {
                     ModelState.AddModelError("Password", "يرجى ادخال كلمه سر تحتوي على احرف كبيره وصغيره وارقام وحروف مميزه");
                 }
-
             }
+
             return View();
         }
-        
-        public  IActionResult Login()
+
+
+        public IActionResult Login()
         {
             return View();
         }
@@ -99,7 +121,7 @@ namespace E_Tickets.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "هناك خطأ في الحساب او في كلمه السر");
+                    ModelState.AddModelError(string.Empty, "البريد الالكتروني غير موجود");
                 }
             }
 

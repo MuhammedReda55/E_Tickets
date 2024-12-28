@@ -82,7 +82,7 @@ namespace E_Tickets.Controllers
                         .Replace("{{TotalPrice}}", ticketDetails.TotalPrice.ToString("F2"))
                         .Replace("{{Date}}", ticketDetails.Date.ToString("yyyy-MM-dd HH:mm"));
 
-                    // إرسال البريد الإلكتروني
+                    
                     await emailSender.SendEmailAsync(user.Email, "Success", emailBody);
                 }
 
