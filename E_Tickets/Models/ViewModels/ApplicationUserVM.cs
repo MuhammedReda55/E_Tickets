@@ -4,7 +4,7 @@ namespace E_Tickets.Models.ViewModels
 {
     public class ApplicationUserVM
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         [Required]
         public string UserName { get; set; }
         [Required]

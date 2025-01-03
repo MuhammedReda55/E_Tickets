@@ -6,7 +6,11 @@ using E_Tickets.Models;
 using Microsoft.AspNetCore.Identity;
 using Stripe;
 using E_Tickets.Utility;
-using E_commerce.Utility;
+using E_Tickets.DbInitionlizer;
+//using E_Tickets.DbInitionlizer;
+
+
+
 
 namespace E_Tickets
 {
@@ -16,8 +20,9 @@ namespace E_Tickets
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            builder.Services.AddControllersWithViews();
+           builder.Services.AddAutoMapper(typeof(Program));
+           // Add services to the container.
+           builder.Services.AddControllersWithViews();
 
             builder.Services.AddControllersWithViews();
 
@@ -47,6 +52,9 @@ namespace E_Tickets
             builder.Services.AddScoped<IRequestCinemaRepository, RequestCinemaRepository>();
             builder.Services.AddScoped<ICartRepository, CartRepository>();
             builder.Services.AddTransient<IEmailSender, EmailSender>();
+            builder.Services.AddScoped<IDbInitionlizer, DbInitioniser>();
+         
+            
 
             var app = builder.Build();
 
@@ -63,7 +71,12 @@ namespace E_Tickets
 
             app.UseRouting();
 
+          
             app.UseAuthorization();
+
+            var scope = app.Services.CreateScope();
+            var service = scope.ServiceProvider.GetService<IDbInitionlizer>();
+            service.Initionlize();
 
             app.MapControllerRoute(
                 name: "default",

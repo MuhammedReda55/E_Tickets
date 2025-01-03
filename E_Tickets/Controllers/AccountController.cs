@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using AutoMapper;
 
 namespace E_Tickets.Controllers
 {
@@ -17,14 +18,16 @@ namespace E_Tickets.Controllers
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly IEmailSender emailSender;
+        private readonly IMapper _mapper;
 
         public AccountController(UserManager<ApplicationUser> userManager,SignInManager<ApplicationUser>
-            signInManager,RoleManager<IdentityRole> roleManager, IEmailSender emailSender)
+            signInManager,RoleManager<IdentityRole> roleManager, IEmailSender emailSender, IMapper mapper)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.roleManager = roleManager;
             this.emailSender = emailSender;
+            this._mapper = mapper;
         }
         public async Task<IActionResult> Register()
         {
@@ -43,20 +46,22 @@ namespace E_Tickets.Controllers
         {
             if (ModelState.IsValid)
             {
-                ApplicationUser user = new()
-                {
-                    UserName = UserVM.UserName,
-                    Email = UserVM.Email,
-                    Address = UserVM.Address,
-                    Name = UserVM.Name,
-                    photo = "~/default-photo.png"
-                };
+                //ApplicationUser user = new()
+                //{
+                //    UserName = UserVM.UserName,
+                //    Email = UserVM.Email,
+                //    Address = UserVM.Address,
+                //    Name = UserVM.Name,
+                //    photo = "~/default-photo.png"
+                //};
+
+                ApplicationUser user = _mapper.Map<ApplicationUser>(UserVM);
 
                 var result = await userManager.CreateAsync(user, UserVM.Password);
                 if (result.Succeeded)
                 {
                     // Add user to the "Customer" role
-                    await userManager.AddToRoleAsync(user, "Customer");
+                    await userManager.AddToRoleAsync(user, SD.CustomerRole);
 
                     // Generate the login URL
                     string loginUrl = Url.Action("Login", "Account", null, protocol: Request.Scheme);

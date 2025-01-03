@@ -3,7 +3,7 @@ using System.Net.Mail;
 using System.Net;
 using E_Tickets.Utility;
 
-namespace E_commerce.Utility
+namespace E_Tickets.Utility
 {
     public class EmailSender : IEmailSender
     {
